@@ -18,6 +18,7 @@ Tampak Kanan
 Tampak Tertutup
 ![](tugas%201/113120.jpg)
 
-
+hasil 
+![](file%20html%20dan%20js/tampilan.html)
 
 
