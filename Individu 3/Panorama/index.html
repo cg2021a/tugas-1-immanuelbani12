@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+        }
+
+    </style>
+</head>
+<body onload="draw();">
+</body>
+<script src="https://johnson2heng.github.io/three.js-demo/lib/three.js"></script>
+<script src="https://johnson2heng.github.io/three.js-demo/lib/js/controls/OrbitControls.js"></script>
+<script src="https://johnson2heng.github.io/three.js-demo/lib/js/libs/stats.min.js"></script>
+<script src="https://johnson2heng.github.io/three.js-demo/lib/js/libs/dat.gui.min.js"></script>
+<script>
+    var renderer;
+
+    function initRender() {
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        //Render. Setclearcolor (new three. Color (0xeeeeee, 1.0)); / / set the background color
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+    }
+
+    var camera;
+
+    function initCamera() {
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.target = new THREE.Vector3( 0, 100, 0 );
+    }
+
+    var scene;
+
+    function initScene() {
+        scene = new THREE.Scene();
+    }
+
+    var light;
+
+    function initLight() {
+
+    }
+
+    var mesh,loader=new THREE.TextureLoader();
+    function initModel() {
+
+        //Shaft assist (length of each shaft)
+        var helper = new THREE.AxesHelper(500);
+        scene.add(helper);
+
+        //Declare a sphere
+        var geometry = new THREE.SphereBufferGeometry( 500, 60, 40 );
+        // Reverses the geometry on the X axis so that all face points are inward.
+        geometry.scale( - 1, 1, 1 );
+        //Declare a sphere texture
+        var material = new THREE.MeshBasicMaterial( {
+            map: loader.load( 'pano.jpg' ) //Load a whole texture picture
+        } );
+        mesh = new THREE.Mesh( geometry, material );
+        scene.add( mesh );
+        console.log(scene);
+
+    }
+
+    //Initialize performance plug-ins
+    var stats;
+
+    function initStats() {
+        stats = new Stats();
+        document.body.appendChild(stats.dom);
+    }
+
+    //User interaction plug in left mouse button press and hold rotation, right mouse button press and hold translation, scroll wheel zoom
+    var controls;
+
+    function initControls() {
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // If you use the animate method, delete this function
+        //controls.addEventListener( 'change', render );
+        // Whether there is inertia in the meaning of damping or rotation when the animation is recycled
+        controls.enableDamping = true;
+        //Dynamic damping coefficient is the mouse drag rotation sensitivity
+        //controls.dampingFactor = 0.25;
+        //Can I zoom
+        controls.enableZoom = true;
+        //Auto rotate or not
+        controls.autoRotate = false;
+        //Set the maximum distance between the camera and the origin
+        controls.minDistance = 20;
+        //Set the maximum distance between the camera and the origin
+        controls.maxDistance = 10000;
+        //Enable right drag
+        controls.enablePan = true;
+    }
+
+    //Generate gui settings configuration item
+    var gui;
+    function initGui() {
+        //Declare an object to save the relevant data of the requirement modification
+        gui = {
+
+        };
+        var datGui = new dat.GUI();
+        //Add the setting attribute to the GUI, gui.add (object, attribute, min, max)
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+
+    //Function triggered by window change
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        render();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    function animate() {
+        //Update controller
+        controls.update();
+        render();
+
+        //Update performance plug-ins
+        stats.update();
+        requestAnimationFrame(animate);
+    }
+
+    function draw() {
+        initRender();
+        initScene();
+        initCamera();
+        initLight();
+        initModel();
+        initControls();
+        initStats();
+        initGui();
+
+        animate();
+        window.onresize = onWindowResize;
+    }
+
+    var index = 0;
+    setInterval(function () {
+        var material = mesh.material;
+        index++;
+        if(index >= 4) index = 1;
+        material.map = loader.load( "00"+index+".jpg" );
+        material.map.needsUpdate = true;
+    },8000);
+</script>
+</html>
